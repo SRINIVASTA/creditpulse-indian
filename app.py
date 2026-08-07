@@ -8,23 +8,33 @@ from streamlit.runtime.scriptrunner import get_script_run_ctx
 # Force Streamlit to completely hide the header bar, deployment buttons, and GitHub icons
 st.markdown("""
     <style>
-    header[data-testid="stHeader"] {
-        visibility: hidden !important;
-        display: none !important;
+    /* Reduce padding at the top of the main application container */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 0rem !important;
+        max-width: 95% !important;
     }
-    div[data-testid="stToolbar"] {
-        visibility: hidden !important;
-        display: none !important;
+    
+    /* Reduce padding at the top of the left sidebar container */
+    [data-testid="stSidebarUserContent"] {
+        padding-top: 1.5rem !important;
     }
-    footer {
-        visibility: hidden !important;
+    
+    /* Remove unnecessary margin below sub-elements */
+    .stMarkdown, .element-container {
+        margin-bottom: 0.5rem !important;
     }
-    .stAppDeployButton {
-        visibility: hidden !important;
-        display: none !important;
+    
+    /* Style consistency for your metric cards */
+    .metric-card {
+        background: white; 
+        padding: 15px; 
+        border-radius: 8px; 
+        border: 1px solid #e2e8f0; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ========================================================================= 
 # 🏷️ COPYRIGHT NOTICE 
