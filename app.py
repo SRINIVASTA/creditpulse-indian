@@ -178,26 +178,29 @@ if uploaded_file is not None:
     available_client_ids = out_df['ID'].astype(int).tolist()
     selected_target_id = st.selectbox("Search and Select Target Client ID:", available_client_ids)
     
-    # Extract that single client's processed snapshot out of the master collection matrix
-    target_row = out_df[out_df['ID'] == selected_target_id].iloc.to_dict()
+    # CORRECTED STEP: Added [0] index to safely extract a single row dictionary
+    matched_selection = out_df[out_df['ID'] == selected_target_id]
     
-    col_btn, col_info = st.columns()
-    with col_info:
-        st.info(f"Target selected: **Client ID {selected_target_id}** | Mode: **{target_row['STRATEGY_SEGMENT']}** | Total MAD: **₹{target_row['TOTAL_MAD']:.2f}**")
+    if not matched_selection.empty:
+        target_row = matched_selection.iloc[0].to_dict()
         
-    with col_btn:
-        # The ReportLab PDF is generated ONLY when this button is pressed
-        if st.button(f"⚡ Compile Statement PDF"):
-            with st.spinner(f"Compiling ReportLab layout context for Client {selected_target_id}..."):
-                pdf_factory = ClientStatementGenerator()
-                pdf_stream = pdf_factory.generate_single_client_pdf(target_row)
-                
-            st.success(f"Statement generated in-memory!")
-            st.download_button(
-                label=f"💾 Save Client {selected_target_id} PDF Statement",
-                data=pdf_stream,
-                file_name=f"Statement_Client_{selected_target_id}.pdf",
-                mime="application/pdf"
-            )
-else:
-    st.info("Ingest your portfolio dataset stream above to view all account records, run the 3D Plotly mesh, and compile targeted statements.")
+        col_btn, col_info = st.columns(2)
+        with col_info:
+            st.info(f"Target selected: **Client ID {selected_target_id}** | Mode: **{target_row['STRATEGY_SEGMENT']}** | Total MAD: **₹{target_row['TOTAL_MAD']:.2f}**")
+            
+        with col_btn:
+            # The ReportLab PDF is generated ONLY when this button is pressed
+            if st.button(f"⚡ Compile Statement PDF"):
+                with st.spinner(f"Compiling ReportLab layout context for Client {selected_target_id}..."):
+                    pdf_factory = ClientStatementGenerator()
+                    pdf_stream = pdf_factory.generate_single_client_pdf(target_row)
+                    
+                st.success(f"Statement generated in-memory!")
+                st.download_button(
+                    label=f"💾 Save Client {selected_target_id} PDF Statement",
+                    data=pdf_stream,
+                    file_name=f"Statement_Client_{selected_target_id}.pdf",
+                    mime="application/pdf"
+                )
+    else:
+        st.error(f"Selected Client ID {selected_target_id} could not be pulled from the stream matrix.")
