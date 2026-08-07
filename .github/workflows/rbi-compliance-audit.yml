@@ -1,0 +1,21 @@
+name: RBI Policy Static Application Compliance Security Scan
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  compliance_audit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v4
+
+    - name: Scan Code Base for Forbidden Compounding Percentage Terms
+      run: |
+        echo "🔍 Scanning codebase for illegal percentage-based late compounding methods..."
+        if grep -rn "penal_interest_percentage" src/ || grep -rn "compound_late_fees" src/; then
+          echo "🚨 CRITICAL COMPLIANCE FAILURE: Non-flat percentage-based charging found!"
+          exit 1
+        fi
+        echo "✅ Scan complete: Zero illegal compounding parameters identified."
