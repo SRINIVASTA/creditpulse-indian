@@ -133,7 +133,6 @@ if uploaded_file is not None:
             <div class='metric-card' style='border-top: 4px solid #f97316;'>
                 <span style='font-size: 20px;'>⚠️</span> <b>Velocity Blocked</b>
                 <h2 style='color: #f97316; margin: 5px 0;'>{security_block_count}</h2>
-                <h2 style='color: #f97316; margin: 5px 0;'>{security_block_count}</h2>
                 <small style='color: #64748b;'>Fraud / Spend Spikes</small>
             </div>
         """, unsafe_allow_html=True)
@@ -221,7 +220,8 @@ if uploaded_file is not None:
         )
     )
     
-    col_chart, col_narrative = st.columns()
+    # FIX: Added explicit count 2 to st.columns to prevent layout crashes
+    col_chart, col_narrative = st.columns(2)
     
     with col_chart:
         st.plotly_chart(fig_pie, use_container_width=True)
@@ -249,8 +249,7 @@ if uploaded_file is not None:
     if not matched_selection.empty:
         target_row = matched_selection.iloc[0].to_dict()
         
-        # 🌟 FORCE SYNCHRONIZATION OVERWRITE LINE 🌟
-        # Overwrite the payload keys to match the active selected screen state strategy
+        # FIX: Added [0] index accessor to assign clean string primitives instead of object arrays
         target_row['STRATEGY_SEGMENT'] = str(out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].values[0])
         
         col_btn, col_info = st.columns(2)
@@ -261,7 +260,6 @@ if uploaded_file is not None:
             if st.button(f"⚡ Compile Statement PDF"):
                 with st.spinner(f"Compiling ReportLab layout context for Client {selected_target_id}..."):
                     pdf_factory = ClientStatementGenerator()
-                    # Now sending the fully synchronized active view metrics downward
                     pdf_stream = pdf_factory.generate_single_client_pdf(target_row)
                     
                 st.success(f"Statement generated in-memory!")
