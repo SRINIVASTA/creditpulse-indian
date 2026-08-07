@@ -8,44 +8,44 @@ from streamlit.runtime.scriptrunner import get_script_run_ctx
 # Force Streamlit to completely hide the header bar, deployment buttons, and GitHub icons
 st.markdown("""
     <style>
-    /* Reduce container layout gaps */
+    /* 1. Hide the entire top header toolbar (Deploy button, Share button, Options menu) */
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+    
+    /* 2. Hide the running status element and background anchor link chains */
+    [data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    
+    /* 3. Hide any GitHub connection buttons or fork badges in the layout viewer */
+    .viewerBadge_container__17w1a {
+        display: none !important;
+    }
+    
+    /* 4. Hide the footer "Made with Streamlit" brand lines at the bottom of the page */
+    footer {
+        visibility: hidden !important;
+    }
+    
+    /* Keep your existing spacing and high-contrast card overrides active */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 0rem !important;
         max-width: 95% !important;
     }
     
-    [data-testid="stSidebarUserContent"] {
-        padding-top: 1.5rem !important;
-    }
-
-    /* FIX: Force high-contrast text rendering inside white cards */
     .metric-card {
         background: white !important; 
         padding: 18px; 
         border-radius: 8px; 
         border: 1px solid #cbd5e1; 
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        color: #0f172a !important; /* Forces global dark slate text */
+        color: #0f172a !important;
         text-align: left;
     }
-    
-    /* Ensure bold segment headers match high-contrast requirements */
-    .metric-card b {
-        color: #0f172a !important;
-        font-size: 14px !important;
-        display: inline-block;
-        margin-left: 5px;
-    }
-    
-    /* Ensure subtitle description text is clearly legible */
-    .metric-card small {
-        color: #475569 !important; /* High-contrast charcoal slate */
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        display: block;
-        margin-top: 2px;
-    }
+    .metric-card b { color: #0f172a !important; font-size: 14px !important; }
+    .metric-card small { color: #475569 !important; font-size: 12px !important; }
     </style>
 """, unsafe_allow_html=True)
 
