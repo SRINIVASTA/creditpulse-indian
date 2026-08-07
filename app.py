@@ -255,17 +255,6 @@ from src.analytical_engines.risk_classifier import execute_priority_waterfall
 from src.actions.ledger_poster import EphemeralLedgerPoster
 from src.actions.statement_generator import ClientStatementGenerator
 
-# Page Layout Configuration
-st.set_page_config(page_title="CreditPulse CC: Enterprise Portfolio Analytics Engine", page_icon="💳", layout="wide")
-
-st.markdown("""
-    <style>
-    .main {background-color: #f8f9fa;}
-    .stButton>button {background-color: #0f172a; color: white; border-radius: 6px; font-weight: bold; width: 100%;}
-    .metric-card {background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
-    </style>
-""", unsafe_allow_html=True)
-
 st.title("💳 CreditPulse-AI: Revolving Credit Card Analytics Platform")
 st.caption("🚨 RBI Master Directions & DPDP Act 2026 Compliant | Ephemeral Core Engine")
 
