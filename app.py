@@ -177,12 +177,11 @@ if uploaded_file is not None:
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (REPLACED COMPLEX 3D MESH)
+    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (CORRECTED ATOMIC COERCION ERRORS)
     st.write("---")
     st.subheader("📊 Portfolio Strategic Exposure Share")
     st.caption(f"✨ Rendering dynamic allocation distribution metrics generated via: **{selected_engine}**")
     
-    # Establish absolute brand compliance color schema tracking tokens
     color_map = {
         "🛑 AI RISK BLOCK": "#ef4444", 
         "⚠️ SECURITY VELOCITY BLOCK": "#f97316",
@@ -191,40 +190,34 @@ if uploaded_file is not None:
         "✅ STABLE BALANCE": "#64748b"
     }
     
-    # Map out the exact live array data distribution from the stream
     segment_counts = out_df['STRATEGY_SEGMENT'].value_counts()
     labels = segment_counts.index.tolist()
     values = segment_counts.values.tolist()
     colors = [color_map.get(lbl, "#cbd5e1") for lbl in labels]
     
-    # Build a clean, modern Donut Chart layer
     fig_pie = go.Figure(data=[go.Pie(
         labels=labels,
         values=values,
-        hole=0.45,  # Creates a clean donut layout for enhanced readability
+        hole=0.45,
         marker=dict(colors=colors, line=dict(color='#ffffff', width=2)),
-        textinfo='label+percent',
+        textinfo='percent',
         insidetextorientation='radial',
         hoverinfo='label+value+percent',
-        textfont=dict(size=13, color='#1e293b', font_family="Inter, sans-serif")
+        textfont=dict(size=13, color='#1e293b', family="Inter")  # Fixed error line
     )])
     
-    # Final geometric framing setup
     fig_pie.update_layout(
         margin=dict(l=20, r=20, b=20, t=20),
-        height=450,
+        height=400,
         showlegend=True,
         legend=dict(
             orientation="v",
-            yanchor="center",
-            y=0.5,
-            xanchor="left",
-            x=1.05,
+            yanchor="center", y=0.5,
+            xanchor="left", x=1.05,
             font=dict(size=12)
         )
     )
     
-    # Double column framing layer to add side-by-side analytical contexts
     col_chart, col_narrative = st.columns([2, 1])
     
     with col_chart:
