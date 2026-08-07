@@ -97,6 +97,7 @@ def process_entire_portfolio_stream(uploaded_file_bytes, file_name, threshold, v
         processed_records.append(transformed)
         
     return pd.DataFrame(processed_records)
+
 # 4. INTERACTIVE SOURCE DATA INGESTION
 uploaded_file = st.file_uploader("📥 Upload Unstructured Portfolio Data Stream (.csv / .xlsx)", type=["csv", "xlsx"])
 
@@ -131,6 +132,7 @@ if uploaded_file is not None:
         st.markdown(f"""
             <div class='metric-card' style='border-top: 4px solid #f97316;'>
                 <span style='font-size: 20px;'>⚠️</span> <b>Velocity Blocked</b>
+                <h2 style='color: #f97316; margin: 5px 0;'>{security_block_count}</h2>
                 <h2 style='color: #f97316; margin: 5px 0;'>{security_block_count}</h2>
                 <small style='color: #64748b;'>Fraud / Spend Spikes</small>
             </div>
@@ -177,7 +179,7 @@ if uploaded_file is not None:
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (FIXED YANCHOR PROPERTY VALUE)
+    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS
     st.write("---")
     st.subheader("📊 Portfolio Strategic Exposure Share")
     st.caption(f"✨ Rendering dynamic allocation distribution metrics generated via: **{selected_engine}**")
@@ -212,14 +214,14 @@ if uploaded_file is not None:
         showlegend=True,
         legend=dict(
             orientation="v",
-            yanchor="middle",  # Fixed: Swapped 'center' out for valid enum token 'middle'
+            yanchor="middle",
             y=0.5,
             xanchor="left", x=1.05,
             font=dict(size=12)
         )
     )
     
-    col_chart, col_narrative = st.columns([2, 1])
+    col_chart, col_narrative = st.columns()
     
     with col_chart:
         st.plotly_chart(fig_pie, use_container_width=True)
@@ -247,6 +249,10 @@ if uploaded_file is not None:
     if not matched_selection.empty:
         target_row = matched_selection.iloc[0].to_dict()
         
+        # 🌟 FORCE SYNCHRONIZATION OVERWRITE LINE 🌟
+        # Overwrite the payload keys to match the active selected screen state strategy
+        target_row['STRATEGY_SEGMENT'] = str(out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].values[0])
+        
         col_btn, col_info = st.columns(2)
         with col_info:
             st.info(f"Target selected: **Client ID {selected_target_id}** | Mode: **{target_row['STRATEGY_SEGMENT']}** | Total MAD: **₹{target_row['TOTAL_MAD']:.2f}**")
@@ -255,6 +261,7 @@ if uploaded_file is not None:
             if st.button(f"⚡ Compile Statement PDF"):
                 with st.spinner(f"Compiling ReportLab layout context for Client {selected_target_id}..."):
                     pdf_factory = ClientStatementGenerator()
+                    # Now sending the fully synchronized active view metrics downward
                     pdf_stream = pdf_factory.generate_single_client_pdf(target_row)
                     
                 st.success(f"Statement generated in-memory!")
