@@ -3,6 +3,8 @@
 
 CreditPulse-AI is a high-utility, B2B SaaS portfolio optimization and risk underwriting application built tailored for Indian Non-Banking Financial Companies (NBFCs), Microfinance Institutions (MFIs), and Digital Lending Startups. 
 
+🌐 **Live Interactive Web App:** [Launch Live Streamlit Dashboard](https://creditpulse-indian-aplrf7swwheadhpqhouazq.streamlit.app/)
+
 The platform deploys a unique **Dual-Engine Architecture** that isolates deterministic accounting logic from predictive machine learning behaviors, allowing lenders to safely uncover trapped credit line revenue while proactively screening for Gross Non-Performing Assets (GNPAs).
 
 ---
@@ -84,3 +86,21 @@ CreditPulse-AI enters markets via a zero-integration **30-Day Sandbox Pilot Trac
 1. **The Ingest Phase:** Target client uploads a historical, anonymized portfolio data file up to 10,000 rows.
 2. **The Measurement Phase:** The engine quantifies *Return on Trust* (proving how many weeks earlier the ML track flags defaults) and *Return on Experience* (unlocking an average of 15% hidden growth accounts stuck in rigid rules).
 3. **The Audit Phase:** Verifies exact financial ledger reconciliation down to a single paisa before generating target customer statements.
+
+## 📄 License & Copyright
+
+> ⚠️ **IMPORTANT COPYRIGHT NOTICE**
+> 
+> **All Rights Reserved © 2026 T A Srinivas.**
+> This repository is strictly for portfolio viewing purposes. **DO NOT COPY, CLONE, OR REDISTRIBUTE** this code. Stolen copies or unauthorized forks will be reported immediately for a GitHub copyright takedown.
+
+* **Lead Architect & Developer:** [Srinivasta](https://github.com/SRINIVASTA)
+
+### 🌐 Let’s Connect
+
+- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/srinivas-t-a-557637119/)  
+- [![Kaggle](https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white)](https://www.kaggle.com/srinivasta)  
+- [![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:tasrinivass@gmail.com)  
+- [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/srinivasta)
+- [![Website](https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=website&logoColor=white)](https://srinivasta.github.io)
+
