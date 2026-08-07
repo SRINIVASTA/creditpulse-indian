@@ -252,10 +252,6 @@ if uploaded_file is not None:
         target_row['STRATEGY_SEGMENT'] = str(out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].iloc[0])
         target_row['ENGINE_MODE'] = selected_engine # 🌟 CRITICAL PARAMETER PASSING LINE 🌟
         
-        # 🌟 FIXED CRITICAL LINE: Extracted raw clean string without array brackets 🌟
-        active_strategy = out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].iloc[0]
-        target_row['STRATEGY_SEGMENT'] = str(active_strategy)
-        
         col_btn, col_info = st.columns(2)
         with col_info:
             st.info(f"Target selected: **Client ID {selected_target_id}** | Mode: **{target_row['STRATEGY_SEGMENT']}** | Total MAD: **₹{target_row['TOTAL_MAD']:.2f}**")
