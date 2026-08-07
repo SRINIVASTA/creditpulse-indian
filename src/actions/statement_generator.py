@@ -18,8 +18,12 @@ class ClientStatementGenerator:
         doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=36, bottomMargin=36)
         story = []
 
+        # Pull active selected engine state securely from memory layout attributes
+        engine_mode_text = client_metrics.get('ENGINE_MODE', '📌 100% Rules-Based (Original Production)')
+
         story.append(Paragraph("CREDITPULSE FINANCIAL SERVICES (NBFC)", self.title_style))
         story.append(Paragraph(f"<b>Statement Run:</b> {datetime.utcnow().strftime('%d-%b-%Y')} | 🚨 Confidential Regulatory Output", self.body_style))
+        story.append(Paragraph(f"<b>Processing Core Infrastructure:</b> {engine_mode_text}", self.body_style))
         story.append(Spacer(1, 10))
 
         account_info_data = [
@@ -67,13 +71,27 @@ class ClientStatementGenerator:
         story.append(Spacer(1, 15))
 
         story.append(Paragraph("System Strategy Allocation Logic", self.h2_style))
-        strategy_explanation = "Stable portfolio configuration. Standard revolving interest parameters apply."
-        if "GROWTH" in client_metrics['STRATEGY_SEGMENT']:
-            strategy_explanation = "Your account is flagged for <b>Growth Optimization</b> because your repayment records are clean and your credit line utilization is low. You are eligible for automated credit limit upgrades."
-        elif "RISK" in client_metrics['STRATEGY_SEGMENT']:
-            strategy_explanation = "Your account has entered a <b>Risk Overrides</b> state because your current card utilization has crossed the critical 90% boundary while an overdue status exists."
-        elif "VELOCITY" in client_metrics['STRATEGY_SEGMENT']:
-            strategy_explanation = "Your account is under a temporary <b>Security Lock</b> because your current spending volume surged by over 5.0x compared to your historical baseline."
+        
+        # 🌟 FIXED CRITICAL SYNCHRONIZATION LOGIC 🌟
+        # If the user selected the ML Engine Track on their screen, forcefully match the ML text parameters
+        if "Predictive ML Engine" in engine_mode_text:
+            if "GROWTH" in client_metrics['STRATEGY_SEGMENT']:
+                strategy_explanation = "Your account is flagged for <b>Growth Optimization via Machine Learning</b> because your multi-dimensional repayment delay signals and spend patterns match low-risk behavioral scores. You are eligible for automated credit limit upgrades."
+            elif "RISK" in client_metrics['STRATEGY_SEGMENT']:
+                strategy_explanation = "Your account has entered an ML-Assigned <b>Critical Risk Overrides</b> track based on continuous predictive default modeling variables."
+            elif "VELOCITY" in client_metrics['STRATEGY_SEGMENT']:
+                strategy_explanation = "Your account is under an adaptive <b>Predictive Security Lock</b> due to anomaly vectors found in recent transactions."
+            else:
+                strategy_explanation = "Stable portfolio configuration verified via background predictive models."
+        else:
+            # Fallback cleanly to your original original rule-based text blocks
+            strategy_explanation = "Stable portfolio configuration. Standard revolving interest parameters apply."
+            if "GROWTH" in client_metrics['STRATEGY_SEGMENT']:
+                strategy_explanation = "Your account is flagged for <b>Growth Optimization</b> because your repayment records are clean and your credit line utilization is low. You are eligible for automated credit limit upgrades."
+            elif "RISK" in client_metrics['STRATEGY_SEGMENT']:
+                strategy_explanation = "Your account has entered a <b>Risk Overrides</b> state because your current card utilization has crossed the critical 90% boundary while an overdue status exists."
+            elif "VELOCITY" in client_metrics['STRATEGY_SEGMENT']:
+                strategy_explanation = "Your account is under a temporary <b>Security Lock</b> because your current spending volume surged by over 5.0x compared to your historical baseline."
 
         story.append(Paragraph(strategy_explanation, self.body_style))
         story.append(Spacer(1, 20))
