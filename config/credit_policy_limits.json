@@ -1,0 +1,22 @@
+{
+  "indian_lending_compliance_profile": {
+    "bureau_parameters": {
+      "target_scoring_network": "CIBIL",
+      "minimum_hard_cutoff": 720,
+      "max_unsecured_inquiries_last_90_days": 2
+    },
+    "rbi_revolving_rules": {
+      "three_day_grace_period_enforced": true,
+      "unauthorized_limit_hikes_blocked": true,
+      "capitalization_of_penal_charges_allowed": false,
+      "mandatory_statement_lead_days": 14,
+      "floor_mad_inr": 250.00
+    },
+    "flat_penal_charge_slabs": [
+      { "min_outstanding_balance_inr": 0, "max_outstanding_balance_inr": 100, "fee_inr": 0 },
+      { "min_outstanding_balance_inr": 101, "max_outstanding_balance_inr": 500, "fee_inr": 100 },
+      { "min_outstanding_balance_inr": 501, "max_outstanding_balance_inr": 10000, "fee_inr": 500 },
+      { "min_outstanding_balance_inr": 10001, "max_outstanding_balance_inr": 9999999, "fee_inr": 750 }
+    ]
+  }
+}
