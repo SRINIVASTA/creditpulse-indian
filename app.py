@@ -248,6 +248,10 @@ if uploaded_file is not None:
     if not matched_selection.empty:
         target_row = matched_selection.iloc[0].to_dict()
         
+        # Pass both clean text parameters securely downward into dictionary array keys
+        target_row['STRATEGY_SEGMENT'] = str(out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].iloc[0])
+        target_row['ENGINE_MODE'] = selected_engine # 🌟 CRITICAL PARAMETER PASSING LINE 🌟
+        
         # 🌟 FIXED CRITICAL LINE: Extracted raw clean string without array brackets 🌟
         active_strategy = out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].iloc[0]
         target_row['STRATEGY_SEGMENT'] = str(active_strategy)
