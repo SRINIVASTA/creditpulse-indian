@@ -1,3 +1,248 @@
+import time
+import urllib.request
+import json
+import pytz  # Handles global timezone-to-country mapping automatically
+import streamlit as st
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+# Force Streamlit to completely hide the header bar, deployment buttons, and GitHub icons
+st.markdown("""
+    <style>
+    header[data-testid="stHeader"] {
+        visibility: hidden !important;
+        display: none !important;
+    }
+    div[data-testid="stToolbar"] {
+        visibility: hidden !important;
+        display: none !important;
+    }
+    footer {
+        visibility: hidden !important;
+    }
+    .stAppDeployButton {
+        visibility: hidden !important;
+        display: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ========================================================================= 
+# 🏷️ COPYRIGHT NOTICE 
+# ========================================================================= 
+st.sidebar.markdown(
+    "<div style='text-align: center; color: #888888; font-size: 12px; margin-bottom: 20px;'>"
+    "© 2026 CreditPulse-AI. All Rights Reserved by Srinivasta."
+    "</div>", 
+    unsafe_allow_html=True
+)
+
+# ========================================================================= 
+# 🤖 AUTOMATION BYPASS DETECTION (For keep_alive.yml compatibility)
+# ========================================================================= 
+is_automation_runner = False
+client_network_ip = "unknown-node"
+
+try:
+    ctx = get_script_run_ctx()
+    if ctx is not None:
+        headers = ctx.websocket_headers
+        user_agent = headers.get("User-Agent", "")
+        
+        # Pull the true IP string securely
+        forwarded_ip = headers.get("X-Forwarded-For", "")
+        if forwarded_ip:
+            client_network_ip = forwarded_ip.split(",")[0].strip()
+        else:
+            client_network_ip = f"local-sandbox-{ctx.session_id}"
+            
+        if "Chrome/120.0.0.0 Safari/537.36" in user_agent:
+            is_automation_runner = True
+except Exception:
+    pass
+
+# ========================================================================= 
+# 🧠 HARDWARE NETWORK SERVER LOCKOUT 
+# ========================================================================= 
+@st.cache_resource
+def get_global_network_blacklist():
+    return set()
+
+global_network_blacklist = get_global_network_blacklist()
+
+# ========================================================================= 
+# 🌐 GLOBAL REGION RESOLVER (Works for Every Country via pytz Database)
+# ========================================================================= 
+def resolve_browser_country():
+    """Dynamically identifies any country in the world using browser metadata fallback chains."""
+    if "detected_country" not in st.session_state:
+        # Step A: Primary Attempt - Check if the WebSocket Forwarded IP yields a clean result
+        try:
+            if not ("local-sandbox" in client_network_ip or client_network_ip == "unknown-node"):
+                url = f"http://ip-api.com{client_network_ip}"
+                response = urllib.request.urlopen(url, timeout=2)
+                data = json.loads(response.read().decode())
+                if data.get("status") == "success" and data.get("country"):
+                    st.session_state.detected_country = data.get("country").upper()
+                    return st.session_state.detected_country
+        except Exception:
+            pass
+
+        # Step B: Cloud Fallback - Fetch Browser Timezone and convert to Country using pytz
+        try:
+            if hasattr(st, "experimental_user") and "browser_tz" in st.experimental_user:
+                tz_str = st.experimental_user.browser_tz
+            else:
+                tz_str = "Asia/Kolkata"  # Base default backup if context is blocked
+
+            if tz_str:
+                # Find ISO Code from pytz timezone mapping
+                country_code = None
+                for code, zones in pytz.country_timezones.items():
+                    if tz_str in zones:
+                        country_code = code
+                        break
+                
+                # Convert common ISO codes to full legible country names
+                if country_code:
+                    iso_mapping = {
+                        "IN": "INDIA", "AE": "UNITED ARAB EMIRATES", "ZA": "SOUTH AFRICA", 
+                        "EG": "EGYPT", "NG": "NIGERIA", "KE": "KENYA", "US": "USA", 
+                        "GB": "UNITED KINGDOM", "CA": "CANADA", "AU": "AUSTRALIA",
+                        "SA": "SAUDI ARABIA", "DE": "GERMANY", "FR": "FRANCE", "JP": "JAPAN"
+                    }
+                    if country_code in iso_mapping:
+                        st.session_state.detected_country = iso_mapping[country_code]
+                        return st.session_state.detected_country
+                    else:
+                        # Fallback parsing format if country name is missing from the subset dictionary
+                        st.session_state.detected_country = f"{country_code} REGION"
+                        return st.session_state.detected_country
+                else:
+                    # Generic text manipulation fallback if timezone is exotic
+                    st.session_state.detected_country = tz_str.split("/")[-1].replace("_", " ").upper()
+                    return st.session_state.detected_country
+        except Exception:
+            pass
+
+        # Final absolute fallback if execution environment is completely isolated
+        st.session_state.detected_country = "GLOBAL ACCESS PROFILE"
+            
+    return st.session_state.detected_country
+
+# Execute the universal country string checker instantly
+current_resolved_country = resolve_browser_country()
+
+# ========================================================================= 
+# 🔑 INPUT CONFIGURATION FOR USER VS DEVELOPER
+# ========================================================================= 
+st.sidebar.title("🔒 Software Security Portal") 
+
+if is_automation_runner:
+    license_input = "DEV-ADMIN-99"  
+    st.sidebar.text_input("Enter License Key:", value="••••••••••••", type="password", disabled=True)
+else:
+    license_input = st.sidebar.text_input("Enter License Key:", type="password") 
+
+is_developer = (license_input == "DEV-ADMIN-99")
+
+# ========================================================================= 
+# 🔓 ACCESS VALIDATION MATRIX
+# ========================================================================= 
+def verify_global_access(user_key):
+    GLOBAL_MASTER_KEY = "TEST-KEY-1234"
+    DEVELOPER_KEY = "DEV-ADMIN-99"
+    
+    if user_key == DEVELOPER_KEY:
+        if is_automation_runner:
+            return f"System Health Ping Active ({current_resolved_country})", current_resolved_country
+        return f"Developer Admin Mode (Unlimited) - {current_resolved_country}", current_resolved_country
+        
+    elif user_key.startswith("CLIENT-"):
+        try:
+            # Safely converts target string extraction values to uppercase
+            region = user_key.split("-")[1].upper()
+            return f"Enterprise License Active ({region} Portfolio Unlimited) 👑", region
+        except Exception:
+            return "Enterprise License Active (Unlimited Access) 👑", "GLOBAL ENTERPRISE"
+        
+    elif user_key == GLOBAL_MASTER_KEY:
+        if client_network_ip in global_network_blacklist:
+            st.sidebar.error("🚨 Status: Access Expired / Locked!")
+            st.title("🔒 Sandbox Access Permanently Locked")
+            st.error("⏰ Server Registry Warning: Your 10-minute automated preview window has fully elapsed.")
+            st.info("To upgrade to a premium uncapped region profile, please enter your client license key.")
+            st.stop()
+        return f"Global Sandbox Session (10 Min) - {current_resolved_country}", current_resolved_country
+        
+    else:
+        st.sidebar.error("🚨 ACCESS DENIED: Invalid or Unpaid Software License Key.")
+        st.title("🔒 CreditPulse System Locked")
+        st.error("Invalid or unpaid license configuration profile provided.")
+        st.stop()
+
+if not license_input: 
+    st.title("CreditPulse Autonomous ML Risk System") 
+    st.warning("🔐 This system is protected by copyright. Enter a license key in the sidebar to run.") 
+    st.stop() 
+
+session_profile, user_country = verify_global_access(license_input)
+st.sidebar.success(f"Status: {session_profile}") 
+
+is_paid_user = "Enterprise" in session_profile
+
+# ========================================================================= 
+# ⏱️ 10-MINUTE TIMEOUT SYSTEM
+# ========================================================================= 
+if not is_developer and not is_paid_user:
+    SESSION_LIMIT_SECONDS = 600  
+    
+    if "start_time" not in st.session_state:
+        st.session_state.start_time = time.time()
+    if "session_expired" not in st.session_state:
+        st.session_state.session_expired = False
+
+    elapsed_time = time.time() - st.session_state.start_time
+
+    if elapsed_time > SESSION_LIMIT_SECONDS or st.session_state.session_expired:
+        st.session_state.session_expired = True
+        
+        if client_network_ip != "unknown-node":
+            global_network_blacklist.add(client_network_ip)
+        
+        st.sidebar.error("🚨 Status: Access Expired / Locked!")
+        st.title("🔒 Sandbox Session Expired")
+        st.error("⏰ Your 10-minute automated verification window has fully elapsed.")
+        st.stop() 
+
+    time_left_seconds = int(SESSION_LIMIT_SECONDS - elapsed_time)
+    mins, secs = divmod(time_left_seconds, 60)
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(f"### ⏳ Sandbox Timer:\n## `{mins:02d}:{secs:02d}`")
+elif is_paid_user:
+    st.sidebar.markdown("---")
+    st.sidebar.info("👑 Unlimited Enterprise License Active. Enjoy the system!")
+else:
+    st.sidebar.markdown("---")
+    if is_automation_runner:
+        st.sidebar.warning("🤖 Core Engine Keep-Alive Loop Processing...")
+    else:
+        st.sidebar.info("⚡ Uncapped Developer Session Active. Timeout disabled.")
+
+# ========================================================================= 
+# 🎯 CORE APPLICATION CORE LANDING INTERFACE
+# ========================================================================= 
+
+st.title("🚀 CreditPulse Autonomous ML Risk System")
+st.caption("Predictive artificial intelligence portfolio auditor & card control switcher")
+
+st.success(f"👋 Welcome! System instance running profile for: **{user_country}**")
+
+if is_automation_runner:
+    st.write("Server connection verified successfully.")
+else:
+    st.write("Use the controls in the sidebar to configure core system components.")
+
+
 import streamlit as st
 import pandas as pd
 import numpy as np
