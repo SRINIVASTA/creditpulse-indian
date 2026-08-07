@@ -220,7 +220,6 @@ if uploaded_file is not None:
         )
     )
     
-    # FIX: Added explicit count 2 to st.columns to prevent layout crashes
     col_chart, col_narrative = st.columns(2)
     
     with col_chart:
@@ -249,8 +248,9 @@ if uploaded_file is not None:
     if not matched_selection.empty:
         target_row = matched_selection.iloc[0].to_dict()
         
-        # FIX: Added [0] index accessor to assign clean string primitives instead of object arrays
-        target_row['STRATEGY_SEGMENT'] = str(out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].values[0])
+        # 🌟 FIXED CRITICAL LINE: Extracted raw clean string without array brackets 🌟
+        active_strategy = out_df.loc[out_df['ID'] == selected_target_id, 'STRATEGY_SEGMENT'].iloc[0]
+        target_row['STRATEGY_SEGMENT'] = str(active_strategy)
         
         col_btn, col_info = st.columns(2)
         with col_info:
