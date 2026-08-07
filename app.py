@@ -177,9 +177,10 @@ if uploaded_file is not None:
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 7. COMPREHENSIVE 3D PLOTLY RISK MATRIX SPREAD
+    # 7. COMPREHENSIVE 3D PLOTLY RISK MATRIX SPREAD (UPGRADED FOR VISUAL CLARITY)
     st.write("---")
     st.subheader("📊 3D Portfolio Exposure & Stress Analytics Mesh")
+    st.caption("💡 TIP: Click and drag to rotate the cube. Hover over any point to reveal the precise account profile. Use the side legends to isolate specific risk segments.")
     
     color_map = {
         "🛑 AI RISK BLOCK": "#ef4444", "⚠️ SECURITY VELOCITY BLOCK": "#f97316",
@@ -187,19 +188,47 @@ if uploaded_file is not None:
     }
     out_df['COLOR_MARKER'] = out_df['STRATEGY_SEGMENT'].map(color_map)
     
-    fig_3d = go.Figure(data=[go.Scatter3d(
-        x=out_df['UTIL_RATE'] * 100, y=out_df['SPENDING_JUMP'], z=out_df['PENAL_CHARGES'],
-        mode='markers',
-        marker=dict(size=5, color=out_df['COLOR_MARKER'], opacity=0.85, line=dict(color='#0f172a', width=0.5)),
-        text=out_df['ID'].apply(lambda uid: f"Account ID: {uid}"), hoverinfo='text'
-    )])
+    # Extract underlying raw matrix coordinates
+    x_data = out_df['UTIL_RATE'] * 100
+    y_data = out_df['SPENDING_JUMP']
+    z_data = out_df['PENAL_CHARGES']
+    
+    # Baseline 3D Scatter Layer
+    fig_3d = go.Figure()
+    
+    # Group by segment to enable clean, interactive interactive legend toggling
+    for segment, color in color_map.items():
+        seg_df = out_df[out_df['STRATEGY_SEGMENT'] == segment]
+        if not seg_df.empty:
+            # 1. Main Core 3D Floating Data Points
+            fig_3d.add_trace(go.Scatter3d(
+                x=seg_df['UTIL_RATE'] * 100, y=seg_df['SPENDING_JUMP'], z=seg_df['PENAL_CHARGES'],
+                mode='markers',
+                name=segment,
+                marker=dict(size=6, color=color, opacity=0.85, line=dict(color='#0f172a', width=0.5)),
+                text=seg_df['ID'].apply(lambda uid: f"Account ID: {uid}"), hoverinfo='text+name'
+            ))
+            
+            # 2. 2D Orthogonal Shadow Projections on Floor Plane (Z = 0 baseline)
+            fig_3d.add_trace(go.Scatter3d(
+                x=seg_df['UTIL_RATE'] * 100, y=seg_df['SPENDING_JUMP'], z=np.zeros(len(seg_df)),
+                mode='markers',
+                marker=dict(size=3, color=color, opacity=0.20),
+                showlegend=False, hoverinfo='none'
+            ))
+
+    # Strict spatial engineering modifications for effortless scannability
     fig_3d.update_layout(
         scene=dict(
-            xaxis_title='Utilization Rate (%)', 
-            yaxis_title='Spend Jump Velocity (x)', 
-            zaxis_title='Flat Penal Charges (₹)'
+            xaxis=dict(title='Utilization Rate (%)', titlefont=dict(color='#1e293b'), backgroundcolor="#f8f9fa", gridcolor="#e2e8f0", showbackground=True),
+            yaxis=dict(title='Spend Jump Velocity (x)', titlefont=dict(color='#1e293b'), backgroundcolor="#f8f9fa", gridcolor="#e2e8f0", showbackground=True),
+            zaxis=dict(title='Flat Penal Charges (₹)', titlefont=dict(color='#1e293b'), backgroundcolor="#f8f9fa", gridcolor="#e2e8f0", showbackground=True),
+            # Forces the data to render in an un-distorted cube rather than a long rectangle
+            aspectmode='cube'
         ),
-        margin=dict(l=0, r=0, b=0, t=0), height=550
+        margin=dict(l=0, r=0, b=0, t=30),
+        height=650,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     st.plotly_chart(fig_3d, use_container_width=True)
     
