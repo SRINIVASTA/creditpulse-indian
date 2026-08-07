@@ -1,9 +1,9 @@
-# app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
 import io
 import plotly.graph_objects as go
+from sklearn.linear_model import LogisticRegression
 
 from src.western_to_rbi_transformer import WesternToRbiDataTransformer
 from src.analytical_engines.risk_classifier import execute_priority_waterfall
@@ -24,16 +24,24 @@ st.markdown("""
 st.title("💳 CreditPulse-AI: Revolving Credit Card Analytics Platform")
 st.caption("🚨 RBI Master Directions & DPDP Act 2026 Compliant | Ephemeral Core Engine")
 
-# 1. SIDEBAR PARAMETERS GATEWAY
+# 1. DUAL-ENGINE SELECTION TOGGLE (SIDEBAR)
+st.sidebar.header("🕹️ Engine Architecture Selector")
+selected_engine = st.sidebar.radio(
+    "Choose Core Risk Processing Mode:",
+    ["📌 100% Rules-Based (Original Production)", "🤖 Predictive ML Engine (Parallel Track)"]
+)
+st.sidebar.markdown("---")
+
+# 2. SIDEBAR PARAMETERS GATEWAY
 st.sidebar.header("⚙️ Policy Configuration Gateway")
 ml_thresh = st.sidebar.slider("AI Risk Threshold (Probability)", 0.0, 1.0, 0.70, 0.05)
 vel_cap = st.sidebar.slider("Security Velocity Trigger (x Spend Jump)", 1.0, 10.0, 5.0, 0.5)
 
-# 2. CACHED ENGINE PIPELINE LOOP FOR TOTAL PORTFOLIO EXPOSURE
+# 3. CACHED ENGINE PIPELINE LOOP FOR TOTAL PORTFOLIO EXPOSURE
 @st.cache_data(show_spinner=False)
-def process_entire_portfolio_stream(uploaded_file_bytes, file_name, threshold, velocity_limit):
+def process_entire_portfolio_stream(uploaded_file_bytes, file_name, threshold, velocity_limit, engine_mode):
     """
-    Transforms the full dataset in memory, runs the 5-Tier Decision Waterfall,
+    Transforms the full dataset in memory, runs the selected Decision Track,
     and isolates financial metrics without writing files to local disks.
     """
     if file_name.endswith('.csv'):
@@ -44,8 +52,16 @@ def process_entire_portfolio_stream(uploaded_file_bytes, file_name, threshold, v
     transformer = WesternToRbiDataTransformer()
     processed_records = []
     
+    # Pre-train isolated ML model in active session memory if ML mode is selected
+    if engine_mode == "🤖 Predictive ML Engine (Parallel Track)":
+        X_train = np.array([[0.85, 4, 1.2], [0.15, 0, 0.1], [0.95, 6, 2.5], [0.22, 0, 0.3], [0.70, 2, 0.9], [0.33, 1, 0.2]])
+        y_train = np.array([1, 0, 1, 0, 1, 0])  # 1 = Default Risk, 0 = Active Repayment
+        ml_model = LogisticRegression()
+        ml_model.fit(X_train, y_train)
+
     for _, raw_row in raw_df.iterrows():
         client_dict = raw_row.to_dict()
+        
         # Inject standard revolving primitives if unassigned in base source file mapping
         if 'INTEREST_DUE' not in client_dict: 
             client_dict['INTEREST_DUE'] = float(client_dict['BILL_AMT1']) * 0.035 if int(client_dict['PAY_0']) > 0 else 0.0
@@ -55,22 +71,40 @@ def process_entire_portfolio_stream(uploaded_file_bytes, file_name, threshold, v
             client_dict['PENAL_CHARGES'] = 0.0
         
         transformed = transformer.transform_payload(client_dict)
-        transformed['STRATEGY_SEGMENT'] = execute_priority_waterfall(transformed, threshold, velocity_limit)
         
-        # Stream directly to core ledger network adapters (Zero-Storage requirement)
+        # Branch Execution according to Sidebar Engine selection
+        if engine_mode == "📌 100% Rules-Based (Original Production)":
+            transformed['STRATEGY_SEGMENT'] = execute_priority_waterfall(transformed, threshold, velocity_limit)
+        else:
+            util = float(transformed.get('UTIL_RATE', 0.0))
+            delay = float(client_dict.get('PAY_0', 0.0))
+            jump = float(transformed.get('SPENDING_JUMP', 1.0))
+            
+            ml_prob = ml_model.predict_proba([[util, delay, jump]])[0][1]
+            
+            if ml_prob >= threshold:
+                transformed['STRATEGY_SEGMENT'] = "🛑 AI RISK BLOCK"
+            elif jump >= velocity_limit:
+                transformed['STRATEGY_SEGMENT'] = "⚠️ SECURITY VELOCITY BLOCK"
+            elif delay > 0:
+                transformed['STRATEGY_SEGMENT'] = "🟡 NUDGE DUE ALERT"
+            elif util < 0.30:
+                transformed['STRATEGY_SEGMENT'] = "🟢 GROWTH UPSELL TARGET"
+            else:
+                transformed['STRATEGY_SEGMENT'] = "✅ STABLE BALANCE"
+        
         EphemeralLedgerPoster.post_to_cbs(transformed)
         processed_records.append(transformed)
         
     return pd.DataFrame(processed_records)
-
-# 3. INTERACTIVE SOURCE DATA INGESTION
+# 4. INTERACTIVE SOURCE DATA INGESTION
 uploaded_file = st.file_uploader("📥 Upload Unstructured Portfolio Data Stream (.csv / .xlsx)", type=["csv", "xlsx"])
 
 if uploaded_file is not None:
     file_bytes = uploaded_file.read()
     
     with st.spinner("⚡ Running zero-storage regulatory matrix loops for entire portfolio..."):
-        out_df = process_entire_portfolio_stream(file_bytes, uploaded_file.name, ml_thresh, vel_cap)
+        out_df = process_entire_portfolio_stream(file_bytes, uploaded_file.name, ml_thresh, vel_cap, selected_engine)
         
     # Calculate explicit counts across all 5 tiers of the Strategic Waterfall
     total_records = len(out_df)
@@ -80,7 +114,7 @@ if uploaded_file is not None:
     growth_target_count = len(out_df[out_df['STRATEGY_SEGMENT'] == "🟢 GROWTH UPSELL TARGET"])
     stable_count = len(out_df[out_df['STRATEGY_SEGMENT'] == "✅ STABLE BALANCE"])
     
-    # 4. RENDER COMPREHENSIVE 5-COLUMN DISTRIBUTION METRIC RIBBON
+    # 5. RENDER COMPREHENSIVE 5-COLUMN DISTRIBUTION METRIC RIBBON
     st.write("### 📈 Full Portfolio Segment Distribution")
     m1, m2, m3, m4, m5 = st.columns(5)
     
@@ -139,11 +173,11 @@ if uploaded_file is not None:
         </div>
     """, unsafe_allow_html=True)
         
-    # 5. DATA TABLE VIEWER
+    # 6. DATA TABLE VIEWER
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 6. COMPREHENSIVE 3D PLOTLY RISK MATRIX SPREAD
+    # 7. COMPREHENSIVE 3D PLOTLY RISK MATRIX SPREAD
     st.write("---")
     st.subheader("📊 3D Portfolio Exposure & Stress Analytics Mesh")
     
@@ -169,16 +203,14 @@ if uploaded_file is not None:
     )
     st.plotly_chart(fig_3d, use_container_width=True)
     
-    # 7. SINGLE REQUEST LAZY PDF REPORT COMPILER
+    # 8. SINGLE REQUEST LAZY PDF REPORT COMPILER
     st.write("---")
     st.subheader("🖨️ Target On-Demand Client Statement Generator")
     st.caption("Select one specific client from the portfolio. The system will compile the unalterable ReportLab PDF *only* for that request.")
     
-    # Render dropdown search selector populated with live streaming account IDs
     available_client_ids = out_df['ID'].astype(int).tolist()
     selected_target_id = st.selectbox("Search and Select Target Client ID:", available_client_ids)
     
-    # CORRECTED STEP: Added [0] index to safely extract a single row dictionary
     matched_selection = out_df[out_df['ID'] == selected_target_id]
     
     if not matched_selection.empty:
@@ -189,7 +221,6 @@ if uploaded_file is not None:
             st.info(f"Target selected: **Client ID {selected_target_id}** | Mode: **{target_row['STRATEGY_SEGMENT']}** | Total MAD: **₹{target_row['TOTAL_MAD']:.2f}**")
             
         with col_btn:
-            # The ReportLab PDF is generated ONLY when this button is pressed
             if st.button(f"⚡ Compile Statement PDF"):
                 with st.spinner(f"Compiling ReportLab layout context for Client {selected_target_id}..."):
                     pdf_factory = ClientStatementGenerator()
