@@ -228,19 +228,8 @@ else:
     else:
         st.sidebar.info("⚡ Uncapped Developer Session Active. Timeout disabled.")
 
-# ========================================================================= 
-# 🎯 CORE APPLICATION CORE LANDING INTERFACE
-# ========================================================================= 
-
-st.title("🚀 CreditPulse Autonomous ML Risk System")
-st.caption("Predictive artificial intelligence portfolio auditor & card control switcher")
 
 st.success(f"👋 Welcome! System instance running profile for: **{user_country}**")
-
-if is_automation_runner:
-    st.write("Server connection verified successfully.")
-else:
-    st.write("Use the controls in the sidebar to configure core system components.")
 
 
 import streamlit as st
