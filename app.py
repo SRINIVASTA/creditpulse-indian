@@ -8,30 +8,43 @@ from streamlit.runtime.scriptrunner import get_script_run_ctx
 # Force Streamlit to completely hide the header bar, deployment buttons, and GitHub icons
 st.markdown("""
     <style>
-    /* Reduce padding at the top of the main application container */
+    /* Reduce container layout gaps */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 0rem !important;
         max-width: 95% !important;
     }
     
-    /* Reduce padding at the top of the left sidebar container */
     [data-testid="stSidebarUserContent"] {
         padding-top: 1.5rem !important;
     }
-    
-    /* Remove unnecessary margin below sub-elements */
-    .stMarkdown, .element-container {
-        margin-bottom: 0.5rem !important;
+
+    /* FIX: Force high-contrast text rendering inside white cards */
+    .metric-card {
+        background: white !important; 
+        padding: 18px; 
+        border-radius: 8px; 
+        border: 1px solid #cbd5e1; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        color: #0f172a !important; /* Forces global dark slate text */
+        text-align: left;
     }
     
-    /* Style consistency for your metric cards */
-    .metric-card {
-        background: white; 
-        padding: 15px; 
-        border-radius: 8px; 
-        border: 1px solid #e2e8f0; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    /* Ensure bold segment headers match high-contrast requirements */
+    .metric-card b {
+        color: #0f172a !important;
+        font-size: 14px !important;
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    /* Ensure subtitle description text is clearly legible */
+    .metric-card small {
+        color: #475569 !important; /* High-contrast charcoal slate */
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        display: block;
+        margin-top: 2px;
     }
     </style>
 """, unsafe_allow_html=True)
