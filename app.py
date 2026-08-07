@@ -177,60 +177,68 @@ if uploaded_file is not None:
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 7. COMPREHENSIVE 3D PLOTLY RISK MATRIX SPREAD (UPGRADED FOR VISUAL CLARITY)
+    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (REPLACED COMPLEX 3D MESH)
     st.write("---")
-    st.subheader("📊 3D Portfolio Exposure & Stress Analytics Mesh")
-    st.caption("💡 TIP: Click and drag to rotate the cube. Hover over any point to reveal the precise account profile. Use the side legends to isolate specific risk segments.")
+    st.subheader("📊 Portfolio Strategic Exposure Share")
+    st.caption(f"✨ Rendering dynamic allocation distribution metrics generated via: **{selected_engine}**")
     
+    # Establish absolute brand compliance color schema tracking tokens
     color_map = {
-        "🛑 AI RISK BLOCK": "#ef4444", "⚠️ SECURITY VELOCITY BLOCK": "#f97316",
-        "🟡 NUDGE DUE ALERT": "#eab308", "🟢 GROWTH UPSELL TARGET": "#22c55e", "✅ STABLE BALANCE": "#64748b"
+        "🛑 AI RISK BLOCK": "#ef4444", 
+        "⚠️ SECURITY VELOCITY BLOCK": "#f97316",
+        "🟡 NUDGE DUE ALERT": "#eab308", 
+        "🟢 GROWTH UPSELL TARGET": "#22c55e", 
+        "✅ STABLE BALANCE": "#64748b"
     }
-    out_df['COLOR_MARKER'] = out_df['STRATEGY_SEGMENT'].map(color_map)
     
-    # Extract underlying raw matrix coordinates
-    x_data = out_df['UTIL_RATE'] * 100
-    y_data = out_df['SPENDING_JUMP']
-    z_data = out_df['PENAL_CHARGES']
+    # Map out the exact live array data distribution from the stream
+    segment_counts = out_df['STRATEGY_SEGMENT'].value_counts()
+    labels = segment_counts.index.tolist()
+    values = segment_counts.values.tolist()
+    colors = [color_map.get(lbl, "#cbd5e1") for lbl in labels]
     
-    # Baseline 3D Scatter Layer
-    fig_3d = go.Figure()
+    # Build a clean, modern Donut Chart layer
+    fig_pie = go.Figure(data=[go.Pie(
+        labels=labels,
+        values=values,
+        hole=0.45,  # Creates a clean donut layout for enhanced readability
+        marker=dict(colors=colors, line=dict(color='#ffffff', width=2)),
+        textinfo='label+percent',
+        insidetextorientation='radial',
+        hoverinfo='label+value+percent',
+        textfont=dict(size=13, color='#1e293b', font_family="Inter, sans-serif")
+    )])
     
-    # Group by segment to enable clean, interactive interactive legend toggling
-    for segment, color in color_map.items():
-        seg_df = out_df[out_df['STRATEGY_SEGMENT'] == segment]
-        if not seg_df.empty:
-            # 1. Main Core 3D Floating Data Points
-            fig_3d.add_trace(go.Scatter3d(
-                x=seg_df['UTIL_RATE'] * 100, y=seg_df['SPENDING_JUMP'], z=seg_df['PENAL_CHARGES'],
-                mode='markers',
-                name=segment,
-                marker=dict(size=6, color=color, opacity=0.85, line=dict(color='#0f172a', width=0.5)),
-                text=seg_df['ID'].apply(lambda uid: f"Account ID: {uid}"), hoverinfo='text+name'
-            ))
-            
-            # 2. 2D Orthogonal Shadow Projections on Floor Plane (Z = 0 baseline)
-            fig_3d.add_trace(go.Scatter3d(
-                x=seg_df['UTIL_RATE'] * 100, y=seg_df['SPENDING_JUMP'], z=np.zeros(len(seg_df)),
-                mode='markers',
-                marker=dict(size=3, color=color, opacity=0.20),
-                showlegend=False, hoverinfo='none'
-            ))
-
-    # Strict spatial engineering modifications for effortless scannability
-    fig_3d.update_layout(
-        scene=dict(
-            xaxis=dict(title='Utilization Rate (%)', titlefont=dict(color='#1e293b'), backgroundcolor="#f8f9fa", gridcolor="#e2e8f0", showbackground=True),
-            yaxis=dict(title='Spend Jump Velocity (x)', titlefont=dict(color='#1e293b'), backgroundcolor="#f8f9fa", gridcolor="#e2e8f0", showbackground=True),
-            zaxis=dict(title='Flat Penal Charges (₹)', titlefont=dict(color='#1e293b'), backgroundcolor="#f8f9fa", gridcolor="#e2e8f0", showbackground=True),
-            # Forces the data to render in an un-distorted cube rather than a long rectangle
-            aspectmode='cube'
-        ),
-        margin=dict(l=0, r=0, b=0, t=30),
-        height=650,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    # Final geometric framing setup
+    fig_pie.update_layout(
+        margin=dict(l=20, r=20, b=20, t=20),
+        height=450,
+        showlegend=True,
+        legend=dict(
+            orientation="v",
+            yanchor="center",
+            y=0.5,
+            xanchor="left",
+            x=1.05,
+            font=dict(size=12)
+        )
     )
-    st.plotly_chart(fig_3d, use_container_width=True)
+    
+    # Double column framing layer to add side-by-side analytical contexts
+    col_chart, col_narrative = st.columns([2, 1])
+    
+    with col_chart:
+        st.plotly_chart(fig_pie, use_container_width=True)
+        
+    with col_narrative:
+        st.markdown("#### 🛡️ Compliance Insights")
+        st.markdown(f"""
+        This pie matrix directly breaks down your **{total_records} ingested accounts**. 
+        
+        When toggled, it highlights exactly how the engine shifts accounts dynamically:
+        * **Rule Engine:** Locks your explicit, line-by-line RBI logic cuts.
+        * **ML Engine:** Adapts boundaries based on portfolio-wide behavioral risk signals.
+        """)
     
     # 8. SINGLE REQUEST LAZY PDF REPORT COMPILER
     st.write("---")
