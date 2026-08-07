@@ -177,7 +177,7 @@ if uploaded_file is not None:
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (CORRECTED ATOMIC COERCION ERRORS)
+    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (FIXED COLUMN PARAMETERS & HEX MAPPINGS)
     st.write("---")
     st.subheader("📊 Portfolio Strategic Exposure Share")
     st.caption(f"✨ Rendering dynamic allocation distribution metrics generated via: **{selected_engine}**")
@@ -203,7 +203,7 @@ if uploaded_file is not None:
         textinfo='percent',
         insidetextorientation='radial',
         hoverinfo='label+value+percent',
-        textfont=dict(size=13, color='#1e293b', family="Inter")  # Fixed error line
+        textfont=dict(size=13, color='#1e293b', family="Inter")
     )])
     
     fig_pie.update_layout(
@@ -218,7 +218,8 @@ if uploaded_file is not None:
         )
     )
     
-    col_chart, col_narrative = st.columns([2, 1])
+    # Fixed: Added clear structural split dimension [3, 2] to remove validation error
+    col_chart, col_narrative = st.columns([3, 2])
     
     with col_chart:
         st.plotly_chart(fig_pie, use_container_width=True)
