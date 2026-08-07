@@ -177,7 +177,7 @@ if uploaded_file is not None:
     st.write("### 🛡️ Live Ephemeral Stream Processing Data View (All Rows)")
     st.dataframe(out_df[['ID', 'LIMIT_BAL', 'UTIL_RATE', 'SPENDING_JUMP', 'PENAL_CHARGES', 'TOTAL_MAD', 'GST_COMP', 'STRATEGY_SEGMENT']], use_container_width=True)
     
-    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (FIXED COLUMN PARAMETERS & HEX MAPPINGS)
+    # 7. PORTFOLIO SEGMENT EXPOSURE PIE ANALYSIS (FIXED YANCHOR PROPERTY VALUE)
     st.write("---")
     st.subheader("📊 Portfolio Strategic Exposure Share")
     st.caption(f"✨ Rendering dynamic allocation distribution metrics generated via: **{selected_engine}**")
@@ -212,14 +212,14 @@ if uploaded_file is not None:
         showlegend=True,
         legend=dict(
             orientation="v",
-            yanchor="center", y=0.5,
+            yanchor="middle",  # Fixed: Swapped 'center' out for valid enum token 'middle'
+            y=0.5,
             xanchor="left", x=1.05,
             font=dict(size=12)
         )
     )
     
-    # Fixed: Added clear structural split dimension [3, 2] to remove validation error
-    col_chart, col_narrative = st.columns([3, 2])
+    col_chart, col_narrative = st.columns([2, 1])
     
     with col_chart:
         st.plotly_chart(fig_pie, use_container_width=True)
