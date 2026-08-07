@@ -200,3 +200,4 @@ if uploaded_file is not None:
                 mime="application/pdf"
             )
 else:
+st.info("Ingest your portfolio dataset stream above to view all account records, run the 3D Plotly mesh, and compile targeted statements.")
